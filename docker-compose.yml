@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: gmit_backend
     ports:
-      - "8000:8000"
+      - "8001:8000"
     environment:
       - DATABASE_URL=${DATABASE_URL:-postgresql://gmit:gmit@postgres:5432/gmit}
       - SECRET_KEY=${SECRET_KEY:-dev-secret-change-in-production-32chars}
@@ -14,7 +14,7 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - FRED_API_KEY=${FRED_API_KEY:-}
       - EIA_API_KEY=${EIA_API_KEY:-}
-      - CORS_ORIGINS=["http://localhost:3000"]
+      - CORS_ORIGINS=["http://localhost:3001"]
       - APP_ENV=${APP_ENV:-development}
     volumes:
       - ./backend:/app
@@ -31,9 +31,9 @@ services:
       dockerfile: Dockerfile
     container_name: gmit_web
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URL=http://localhost:8001
       - API_URL=http://backend:8000
     volumes:
       - ./apps/web:/app

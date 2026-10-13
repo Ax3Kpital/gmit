@@ -31,8 +31,10 @@ cp .env.example .env
 docker compose up --build
 ```
 
-- Frontend: http://localhost:3000  
-- API + Docs: http://localhost:8000/docs
+- Frontend: http://localhost:3001  
+- API + Docs: http://localhost:8001/docs
+
+> Porturile 3001 și 8001 evită conflictul cu `bvb_project` (3000, 8000).
 
 ---
 
