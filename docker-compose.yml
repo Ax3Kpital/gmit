@@ -1,0 +1,75 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gmit_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql://gmit:gmit@postgres:5432/gmit}
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-change-in-production-32chars}
+      - LLM_PROVIDER=${LLM_PROVIDER:-mock}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - FRED_API_KEY=${FRED_API_KEY:-}
+      - EIA_API_KEY=${EIA_API_KEY:-}
+      - CORS_ORIGINS=["http://localhost:3000"]
+      - APP_ENV=${APP_ENV:-development}
+    volumes:
+      - ./backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - gmit_network
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: gmit_web
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - API_URL=http://backend:8000
+    volumes:
+      - ./apps/web:/app
+      - web_node_modules:/app/node_modules
+      - web_next:/app/.next
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - gmit_network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: gmit_postgres
+    environment:
+      - POSTGRES_DB=gmit
+      - POSTGRES_USER=gmit
+      - POSTGRES_PASSWORD=gmit
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gmit -d gmit"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - gmit_network
+
+volumes:
+  postgres_data:
+  web_node_modules:
+  web_next:
+
+networks:
+  gmit_network:
+    driver: bridge

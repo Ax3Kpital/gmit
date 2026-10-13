@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg:     #0e1116;
+  --panel:  #161b22;
+  --line:   #2a3340;
+  --text:   #e8edf4;
+  --muted:  #8b98a8;
+  --accent: #3d9cf0;
+  --up:     #3ecf8e;
+  --down:   #f07178;
+  --warn:   #e6b84c;
+  --input:  #0d1117;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* Selection */
+::selection {
+  background: rgba(61, 156, 240, 0.25);
+  color: var(--text);
+}
+
+/* Input reset */
+input,
+select,
+textarea {
+  background: var(--input);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 1px solid var(--accent);
+  border-color: var(--accent);
+}
+
+/* Number/mono class */
+.mono {
+  font-family: 'IBM Plex Mono', 'SF Mono', ui-monospace, monospace;
+}
+
+/* Utility: positive / negative / warning */
+.text-up   { color: var(--up); }
+.text-down { color: var(--down); }
+.text-warn { color: var(--warn); }
+.text-muted { color: var(--muted); }
+.text-accent { color: var(--accent); }

@@ -1,0 +1,96 @@
+{
+  "app": {
+    "name": "GMIT",
+    "fullName": "Global Macro Intelligence Terminal",
+    "tagline": "Personal macro-financial research terminal",
+    "notFinancialAdvice": "Not financial advice. For research purposes only."
+  },
+  "nav": {
+    "commandCenter": "Command Center",
+    "markets": "Markets",
+    "macro": "Macro",
+    "geopolitics": "Geopolitics",
+    "scenarios": "Scenarios",
+    "opportunities": "Opportunities",
+    "smartMoney": "Smart Money",
+    "alerts": "Alerts",
+    "researchLibrary": "Research Library",
+    "agentActivity": "AI Agents",
+    "providers": "Data Providers",
+    "settings": "Settings"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in to terminal",
+    "signingIn": "Signing in...",
+    "invalidCredentials": "Invalid email or password",
+    "sessionExpired": "Session expired. Please sign in again."
+  },
+  "commandCenter": {
+    "title": "Command Center",
+    "whatChanged": "What changed?",
+    "marketRegime": "Market Regime",
+    "marketTape": "Market Tape",
+    "activeScenarios": "Active Scenarios",
+    "topOpportunities": "Opportunities",
+    "noDataYet": "Data unavailable",
+    "phaseLabel": "Phase {phase}",
+    "phaseNote": "Data connections will be active starting from Phase 2.",
+    "regime": {
+      "growth": "Growth",
+      "inflation": "Inflation",
+      "liquidity": "Liquidity",
+      "rates": "Rates",
+      "usd": "USD",
+      "riskAppetite": "Risk Appetite",
+      "credit": "Credit",
+      "unknown": "Unknown"
+    }
+  },
+  "providers": {
+    "title": "Data Providers",
+    "subtitle": "Status of external data source connections",
+    "status": {
+      "configured": "Configured",
+      "unconfigured": "Unconfigured",
+      "ok": "Active",
+      "degraded": "Degraded",
+      "down": "Down",
+      "unknown": "Unknown"
+    },
+    "phase": "Phase {phase}",
+    "configureInEnv": "Configure in .env",
+    "noKeyRequired": "No API key required",
+    "terms": "Terms",
+    "description": "Description"
+  },
+  "dataStatus": {
+    "REALTIME": "Real-time",
+    "DELAYED": "Delayed",
+    "END_OF_DAY": "End of day",
+    "PERIODIC_OFFICIAL_RELEASE": "Official release",
+    "INDICATIVE": "Indicative",
+    "STALE": "Stale",
+    "UNAVAILABLE": "Unavailable",
+    "UNKNOWN": "Unknown"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "unavailable": "Unavailable",
+    "noData": "No data",
+    "source": "Source",
+    "lastUpdated": "Updated",
+    "phase": "Phase",
+    "demo": "DEMO",
+    "beta": "BETA",
+    "learnMore": "Learn more",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "app": {
+    "name": "GMIT",
+    "fullName": "Global Macro Intelligence Terminal",
+    "tagline": "Terminal personal de cercetare macro-financiară",
+    "notFinancialAdvice": "Nu este consiliere financiară. Exclusiv pentru cercetare."
+  },
+  "nav": {
+    "commandCenter": "Centru de Comandă",
+    "markets": "Piețe",
+    "macro": "Macro",
+    "geopolitics": "Geopolitică",
+    "scenarios": "Scenarii",
+    "opportunities": "Oportunități",
+    "smartMoney": "Smart Money",
+    "alerts": "Alerte",
+    "researchLibrary": "Bibliotecă",
+    "agentActivity": "Agenți AI",
+    "providers": "Furnizori Date",
+    "settings": "Setări"
+  },
+  "auth": {
+    "login": "Autentificare",
+    "logout": "Ieșire",
+    "email": "Email",
+    "password": "Parolă",
+    "signIn": "Intră în terminal",
+    "signingIn": "Se autentifică...",
+    "invalidCredentials": "Email sau parolă incorectă",
+    "sessionExpired": "Sesiunea a expirat. Autentifică-te din nou."
+  },
+  "commandCenter": {
+    "title": "Centru de Comandă",
+    "whatChanged": "Ce s-a schimbat?",
+    "marketRegime": "Regim de Piață",
+    "marketTape": "Banda de Piață",
+    "activeScenarios": "Scenarii Active",
+    "topOpportunities": "Oportunități",
+    "noDataYet": "Date indisponibile",
+    "phaseLabel": "Faza {phase}",
+    "phaseNote": "Conexiunile la date vor fi active începând cu Faza 2.",
+    "regime": {
+      "growth": "Creștere",
+      "inflation": "Inflație",
+      "liquidity": "Lichiditate",
+      "rates": "Rate",
+      "usd": "USD",
+      "riskAppetite": "Apetit Risc",
+      "credit": "Credit",
+      "unknown": "Necunoscut"
+    }
+  },
+  "providers": {
+    "title": "Furnizori de Date",
+    "subtitle": "Starea conexiunilor la surse de date externe",
+    "status": {
+      "configured": "Configurat",
+      "unconfigured": "Neconfigurat",
+      "ok": "Activ",
+      "degraded": "Degradat",
+      "down": "Oprit",
+      "unknown": "Necunoscut"
+    },
+    "phase": "Faza {phase}",
+    "configureInEnv": "Configurează în .env",
+    "noKeyRequired": "Nu necesită cheie API",
+    "terms": "Termeni",
+    "description": "Descriere"
+  },
+  "dataStatus": {
+    "REALTIME": "Real-time",
+    "DELAYED": "Întârziat",
+    "END_OF_DAY": "Sfârșit de zi",
+    "PERIODIC_OFFICIAL_RELEASE": "Publicare oficială",
+    "INDICATIVE": "Indicativ",
+    "STALE": "Expirat",
+    "UNAVAILABLE": "Indisponibil",
+    "UNKNOWN": "Necunoscut"
+  },
+  "common": {
+    "loading": "Se încarcă...",
+    "error": "Eroare",
+    "unavailable": "Indisponibil",
+    "noData": "Fără date",
+    "source": "Sursă",
+    "lastUpdated": "Actualizat",
+    "phase": "Faza",
+    "demo": "DEMO",
+    "beta": "BETA",
+    "learnMore": "Mai mult",
+    "close": "Închide",
+    "save": "Salvează",
+    "cancel": "Anulează",
+    "confirm": "Confirmă"
+  }
+}
