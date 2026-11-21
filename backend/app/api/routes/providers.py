@@ -5,9 +5,25 @@ router = APIRouter(prefix="/providers")
 
 PROVIDERS = [
     {
+        "code": "yahoo_finance",
+        "name": "Yahoo Finance (chart API)",
+        "description": "Near-real-time futures (WTI, Brent, gas), indices and FX, refreshed every 10 minutes",
+        "terms": "UNVERIFIED redistribution terms; unofficial endpoint, personal research use only",
+        "phase": 9,
+        "configured": True,  # no key required
+    },
+    {
+        "code": "us_treasury_yields",
+        "name": "U.S. Treasury daily par yield curve",
+        "description": "Official 2Y and 10Y yields, same-day after the close (feeds DGS2, DGS10, 10Y-2Y)",
+        "terms": "Public domain, no key",
+        "phase": 9,
+        "configured": True,  # no key required
+    },
+    {
         "code": "fred",
         "name": "FRED — Federal Reserve Bank of St. Louis",
-        "description": "Macro series: yields, CPI, unemployment, GDP, spreads",
+        "description": "Macro series and fallback history. Market series lag by days, so live quotes take precedence",
         "terms": "Free, personal/research use, attribution required",
         "phase": 2,
         "configured": bool(settings.fred_api_key),

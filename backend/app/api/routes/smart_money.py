@@ -1,5 +1,7 @@
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, Cookie, HTTPException
 from sqlalchemy.orm import Session
+from app.core.freshness import classify_cot
 from app.db.session import get_db
 from app.services import auth_service
 from app.db.models.smart_money import CotInstrument, CotReport
@@ -93,7 +95,7 @@ def get_cot_overview(
             "category": inst.category,
             "exchange": inst.exchange,
             "related_series_id": inst.related_series_id,
-            "data_status": "END_OF_WEEK",
+            "data_status": classify_cot(latest.report_date, datetime.now(timezone.utc)),
             "latest_report_date": latest.report_date.isoformat(),
             "net_noncomm": latest.net_noncomm,
             "net_noncomm_pct_oi": round(latest.net_noncomm_pct_oi, 2) if latest.net_noncomm_pct_oi is not None else None,

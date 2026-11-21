@@ -21,7 +21,7 @@ def test_missing_data_is_unknown_not_invented():
     s = compute_signals([])
     assert s.curve_shape == "unknown"
     assert s.yield_10y is None and s.wti is None and s.sp500 is None
-    assert s.oil_trend == "stable" and s.equity_trend == "stable" and s.usd_trend == "stable"
+    assert s.oil_trend == "stable" and s.equity_trend == "sideways" and s.usd_trend == "stable"
     assert s.macro_regime == "mixed"
     assert s.as_of == "N/A"
 
@@ -67,3 +67,28 @@ def test_regime_classification(kwargs, regime):
 
 def test_easing_requires_non_inverted_curve():
     assert _classify_regime("inverted", -0.5, "stable", "sideways", "stable") == "mixed"
+
+
+# --- end to end through compute_signals: the vocabulary must match what the regime logic expects
+
+def test_equity_trend_uses_bull_bear_sideways_vocabulary():
+    assert compute_signals([snip("SP500", 7000, pct=3.0)]).equity_trend == "bull"
+    assert compute_signals([snip("SP500", 7000, pct=-3.0)]).equity_trend == "bear"
+    assert compute_signals([snip("SP500", 7000, pct=1.0)]).equity_trend == "sideways"
+    assert compute_signals([]).equity_trend == "sideways"
+
+
+def test_falling_equities_and_falling_oil_is_risk_off_end_to_end():
+    s = compute_signals([snip("SP500", 6910, pct=-6.0), snip("DCOILWTICO", 83, pct=-8.0)])
+    assert (s.equity_trend, s.oil_trend, s.macro_regime) == ("bear", "falling", "risk_off")
+
+
+def test_rising_oil_and_falling_equities_is_stagflation_end_to_end():
+    s = compute_signals([snip("SP500", 6910, pct=-6.0), snip("DCOILWTICO", 95, pct=9.0)])
+    assert s.macro_regime == "stagflation"
+
+
+def test_rising_equities_and_calm_oil_is_goldilocks_end_to_end():
+    s = compute_signals([snip("SP500", 7500, pct=5.0), snip("DCOILWTICO", 80, pct=0.5),
+                         snip("DGS10", 4.2, delta=0.05)])
+    assert s.macro_regime == "goldilocks"

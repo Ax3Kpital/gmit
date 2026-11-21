@@ -1,13 +1,16 @@
 import { DataStatusBadge } from '@/components/ui/Badge';
 import type { DataStatus } from '@/types';
 
-interface WatchlistItem {
+export interface WatchlistItem {
   series_id: string;
   display_name: string;
   category: string;
   units: string;
   data_status: string;
   latest_date: string | null;
+  age: string;
+  provider: string;
+  updated_at: string | null;
   latest_value: number | null;
   change: number | null;
   change_pct: number | null;
@@ -17,6 +20,23 @@ interface WatchlistItem {
 interface WatchlistTableProps {
   items: WatchlistItem[];
   categoryLabel: string;
+}
+
+const PROVIDER_LABEL: Record<string, string> = {
+  yahoo_finance: 'Yahoo Finance',
+  fred: 'FRED',
+  us_treasury: 'US Treasury',
+};
+
+function providerLabel(provider: string): string {
+  return PROVIDER_LABEL[provider] ?? PROVIDER_LABEL[provider.split(' ')[0]] ?? provider;
+}
+
+function fmtUpdated(iso: string | null): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toISOString().slice(5, 16).replace('T', ' ') + ' UTC';
 }
 
 function fmtValue(value: number | null, units: string): string {
@@ -64,7 +84,7 @@ export function WatchlistTable({ items, categoryLabel }: WatchlistTableProps) {
           key={item.series_id}
           className="grid items-center px-4 py-3"
           style={{
-            gridTemplateColumns: '140px 1fr 1fr 1fr auto',
+            gridTemplateColumns: '160px 1fr 1fr 1.4fr auto',
             gap: '8px',
             borderBottom: idx < items.length - 1 ? '1px solid var(--line)' : undefined,
           }}
@@ -89,10 +109,19 @@ export function WatchlistTable({ items, categoryLabel }: WatchlistTableProps) {
             <ChangeCell change={item.change} pct={item.change_pct} />
           </div>
 
-          {/* Date */}
-          <span className="mono text-xs text-right" style={{ color: 'var(--muted)' }}>
-            {item.latest_date ?? '—'}
-          </span>
+          {/* Date + age + last update */}
+          <div className="flex flex-col items-end gap-0.5">
+            <span className="mono text-xs" style={{ color: 'var(--muted)' }}>
+              {item.latest_date ?? '—'}
+            </span>
+            <span
+              className="text-xs"
+              style={{ color: item.data_status === 'STALE' ? 'var(--warn)' : 'var(--muted)', opacity: 0.8 }}
+              title={item.updated_at ? `Updated ${fmtUpdated(item.updated_at)}` : undefined}
+            >
+              {item.age}{item.updated_at ? ` · ${fmtUpdated(item.updated_at)}` : ''}
+            </span>
+          </div>
 
           {/* Status + source */}
           <div className="flex flex-col items-end gap-0.5">
@@ -104,7 +133,7 @@ export function WatchlistTable({ items, categoryLabel }: WatchlistTableProps) {
               className="text-xs"
               style={{ color: 'var(--accent)', opacity: 0.6 }}
             >
-              FRED ↗
+              {providerLabel(item.provider)} ↗
             </a>
           </div>
         </div>

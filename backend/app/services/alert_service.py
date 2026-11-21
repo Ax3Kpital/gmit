@@ -3,11 +3,11 @@ Alert engine — checks price threshold and COT extreme rules after each ingesti
 Deduplication: only fires once per rule per day to prevent spam.
 """
 import logging
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
 from app.db.models.smart_money import AlertRule, AlertEvent, CotInstrument, CotReport
-from app.db.models.macro import MacroSeries, MacroObservation
+from app.db.models.macro import MacroSeries
 
 log = logging.getLogger("gmit.alerts")
 
@@ -45,12 +45,8 @@ def _check_price_threshold(db: Session, rule: AlertRule) -> int:
     series = db.query(MacroSeries).filter(MacroSeries.series_id == rule.series_id).first()
     if not series:
         return 0
-    latest = (
-        db.query(MacroObservation)
-        .filter(MacroObservation.macro_series_id == series.id, MacroObservation.value.isnot(None))
-        .order_by(MacroObservation.date.desc())
-        .first()
-    )
+    from app.services.series_snapshot import resolve
+    series, latest = resolve(db, series)
     if not latest or latest.value is None:
         return 0
 

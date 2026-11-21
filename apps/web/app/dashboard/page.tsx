@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { AutoRefresh } from '@/components/ui/AutoRefresh';
 import { AppShell } from '@/components/layout/AppShell';
 import { Panel } from '@/components/ui/Panel';
 import { StatusTile } from '@/components/ui/StatusTile';
@@ -106,6 +107,7 @@ export default async function DashboardPage() {
 
   return (
     <AppShell title={t('commandCenter.title')}>
+      <AutoRefresh seconds={60} />
       <div className="p-5 space-y-5">
 
         {/* Market tape */}

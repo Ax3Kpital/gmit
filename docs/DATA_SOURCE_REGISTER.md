@@ -184,6 +184,36 @@
 
 ---
 
+### Yahoo Finance chart API (near-real-time prices)
+| Field | Value |
+|---|---|
+| **Status** | LIVE, terms UNVERIFIED |
+| **Datasets** | Daily bars plus latest quote: WTI (CL=F), Brent (BZ=F), Henry Hub gas (NG=F) front-month futures; S&P 500 (^GSPC), Nasdaq Composite (^IXIC); EUR/USD, USD/JPY, GBP/USD, USD/CNY spot |
+| **Access** | `https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=6mo&interval=1d`, no key. Unofficial and undocumented: may change or rate-limit without notice |
+| **Cost** | Free |
+| **Terms** | UNVERIFIED. No published licence for redistribution. Used for personal, non-commercial research only; do not expose this data publicly. Revisit before any shared deployment |
+| **Freshness** | Quotes are delayed or indicative; refreshed every 10 minutes. Completed sessions are `END_OF_DAY` (futures, indices) or `INDICATIVE` (FX); the live session is `DELAYED` |
+| **Cross-check** | `^GSPC` and `^IXIC` closes matched FRED `SP500` and `NASDAQCOM` exactly on every overlapping date (2026-11-12 to 2026-11-19) |
+| **Caveats** | Futures are front-month contracts, not EIA spot prices: WTI futures sat about 2.5-3 USD under FRED spot, Brent about 0.5 USD. They are stored as separate series and never spliced into the FRED series |
+| **Implementation** | `backend/app/providers/yahoo.py`, `backend/app/services/live_market_ingestion.py`, catalogue in `backend/app/services/series_catalog.py` |
+| **Last verified** | 2026-11-21 |
+
+---
+
+### U.S. Treasury daily par yield curve
+| Field | Value |
+|---|---|
+| **Status** | VERIFIED, LIVE |
+| **Datasets** | 2-year and 10-year constant-maturity yields (the same definition FRED republishes as DGS2 and DGS10); 10Y-2Y spread is computed locally |
+| **Access** | `https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value_month=YYYYMM`, no key |
+| **Cost** | Free |
+| **Terms** | U.S. government data, public domain |
+| **Freshness** | Same evening as the trading day, about one day ahead of FRED. Refreshed every 30 minutes |
+| **Implementation** | `backend/app/providers/treasury.py`, `store_yields` in `live_market_ingestion.py` |
+| **Last verified** | 2026-11-21 |
+
+---
+
 ### GPR Index (Caldara & Iacoviello)
 | Field | Value |
 |---|---|

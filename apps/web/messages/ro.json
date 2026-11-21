@@ -80,7 +80,7 @@
   },
   "market": {
     "title": "Piețe",
-    "subtitle": "Date EOD via FRED — Federal Reserve Bank of St. Louis",
+    "subtitle": "Cotații aproape în timp real, reîmprospătate la 10 minute",
     "asOf": "Actualizat",
     "instrument": "Instrument",
     "lastPrice": "Ultimul preț",
@@ -91,7 +91,7 @@
     "equities": "Acțiuni",
     "fx": "Valute",
     "noData": "Nu sunt date disponibile. Verifică că FRED_API_KEY este setat în .env",
-    "attribution": "Sursă: FRED, Federal Reserve Bank of St. Louis. Date EOD cu lag de 1-2 zile lucrătoare."
+    "attribution": "Surse: Yahoo Finance (futures, indici și FX: cu întârziere și orientative), US Treasury (randamente oficiale), FRED ca rezervă. Futures sunt contracte front-month și diferă de prețurile spot EIA. Nu pentru tranzacționare."
   },
   "macro": {
     "title": "Curba Randamentelor SUA",

@@ -102,7 +102,10 @@ def compute_signals(snippets: list[dict]) -> MacroSignals:
     sp_d_pct = delta_pct("SP500")
     nq = val("NASDAQCOM")
     nq_d_pct = delta_pct("NASDAQCOM")
-    equity_trend = _trend_pct(sp_d_pct, threshold=2.5)
+    # _trend_pct speaks rising/falling/stable; the regime and thesis logic speaks bull/bear/sideways.
+    equity_trend = {"rising": "bull", "falling": "bear", "stable": "sideways"}[
+        _trend_pct(sp_d_pct, threshold=2.5)
+    ]
 
     # FX — DEXUSEU = USD per EUR (EUR/USD), DEXJPUS = JPY per USD
     eurusd = val("DEXUSEU")

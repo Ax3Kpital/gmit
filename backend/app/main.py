@@ -60,6 +60,30 @@ async def startup():
     else:
         logger.info("FRED_API_KEY not set — macro ingestion disabled")
 
+    # Near-real-time market data (no API key needed): quotes every 10 min, official yields every 30 min.
+    from app.services.live_market_ingestion import run_live_market_ingestion, run_treasury_ingestion
+    _scheduler.add_job(
+        run_live_market_ingestion,
+        trigger="interval",
+        minutes=10,
+        next_run_time=datetime.now(),
+        id="live_market_ingestion",
+        replace_existing=True,
+        max_instances=1,
+        coalesce=True,
+    )
+    _scheduler.add_job(
+        run_treasury_ingestion,
+        trigger="interval",
+        minutes=30,
+        next_run_time=datetime.now(),
+        id="treasury_ingestion",
+        replace_existing=True,
+        max_instances=1,
+        coalesce=True,
+    )
+    logger.info("Live market ingestion started (quotes 10 min, Treasury yields 30 min)")
+
     from app.services.cot_ingestion import run_cot_ingestion
     from app.services.alert_service import run_alert_checks
     _scheduler.add_job(
@@ -98,6 +122,15 @@ async def startup():
         hour=7,
         minute=0,
         id="daily_briefing",
+        replace_existing=True,
+    )
+    _scheduler.add_job(
+        _run_briefing,
+        trigger="cron",
+        day_of_week="mon-fri",
+        hour=22,
+        minute=45,
+        id="daily_briefing_close",
         replace_existing=True,
     )
     _scheduler.add_job(

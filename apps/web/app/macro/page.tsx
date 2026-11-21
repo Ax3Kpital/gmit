@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { AutoRefresh } from '@/components/ui/AutoRefresh';
 import { AppShell } from '@/components/layout/AppShell';
 import { Panel } from '@/components/ui/Panel';
 import { YieldCurvePanel } from '@/components/macro/YieldCurvePanel';
@@ -70,6 +71,7 @@ export default async function MacroPage() {
 
   return (
     <AppShell title="Macro">
+      <AutoRefresh seconds={60} />
       <div className="p-5 space-y-5 max-w-5xl mx-auto">
 
         <p className="text-xs" style={{ color: 'var(--muted)' }}>

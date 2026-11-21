@@ -80,7 +80,7 @@
   },
   "market": {
     "title": "Markets",
-    "subtitle": "EOD data via FRED — Federal Reserve Bank of St. Louis",
+    "subtitle": "Near-real-time quotes, refreshed every 10 minutes",
     "asOf": "As of",
     "instrument": "Instrument",
     "lastPrice": "Last Price",
@@ -91,7 +91,7 @@
     "equities": "Equities",
     "fx": "FX",
     "noData": "No data available. Check that FRED_API_KEY is set in .env",
-    "attribution": "Source: FRED, Federal Reserve Bank of St. Louis. EOD data with 1-2 business day lag."
+    "attribution": "Sources: Yahoo Finance (futures, indices and FX: delayed and indicative), US Treasury (official yields), FRED as fallback. Futures are front-month contracts and differ from EIA spot prices. Not for trading."
   },
   "macro": {
     "title": "U.S. Yield Curve",

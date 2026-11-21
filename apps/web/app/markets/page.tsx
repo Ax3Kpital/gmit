@@ -3,21 +3,9 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { AppShell } from '@/components/layout/AppShell';
 import { Panel } from '@/components/ui/Panel';
-import { WatchlistTable } from '@/components/market/WatchlistTable';
+import { WatchlistTable, type WatchlistItem } from '@/components/market/WatchlistTable';
+import { AutoRefresh } from '@/components/ui/AutoRefresh';
 import { serverFetch } from '@/lib/server-api';
-
-interface WatchlistItem {
-  series_id: string;
-  display_name: string;
-  category: string;
-  units: string;
-  data_status: string;
-  latest_date: string | null;
-  latest_value: number | null;
-  change: number | null;
-  change_pct: number | null;
-  source_url: string;
-}
 
 interface WatchlistResponse {
   items: WatchlistItem[];
@@ -48,6 +36,7 @@ export default async function MarketsPage() {
 
   return (
     <AppShell title={t('title')}>
+      <AutoRefresh seconds={60} />
       <div className="p-5 space-y-5">
 
         {/* Header row */}
@@ -68,7 +57,7 @@ export default async function MarketsPage() {
         <div
           className="grid px-4 py-2 rounded-lg text-xs uppercase tracking-wider"
           style={{
-            gridTemplateColumns: '140px 1fr 1fr 1fr auto',
+            gridTemplateColumns: '160px 1fr 1fr 1.4fr auto',
             gap: '8px',
             color: 'var(--muted)',
             background: 'var(--panel)',

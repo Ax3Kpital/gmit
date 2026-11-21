@@ -1,6 +1,6 @@
 # GMIT — Implementation Plan
 **Last updated:** 2026-10-13  
-**Status:** Phases 0–8 complete (verified 2026-11-21); Phase 9 optional
+**Status:** Phases 0–9 complete (verified 2026-11-21)
 
 ---
 
@@ -191,6 +191,12 @@ Tasks:
 ## Phase 8 — Geopolitics data feeds ✅
 
 GDELT 2.0 (tone, volume and top articles per region, throttled to about one request every 5 seconds) and the Caldara–Iacoviello GPR index; region risk scoring; `/geopolitics` page. Providers that are down degrade to an explicit `UNAVAILABLE` state.
+
+---
+
+## Phase 9 — Data freshness ✅
+
+Near-real-time quotes (Yahoo Finance, every 10 minutes) and official Treasury yields (every 30 minutes) alongside FRED; freshness labels derived from observation dates; UI shows age, provider and update time and refreshes itself every 60 seconds. See ADR-004.
 
 ---
 

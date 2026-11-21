@@ -1,53 +1,13 @@
 import uuid
-from datetime import datetime, timezone, timedelta, date as date_type
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from app.db.models.research import Thesis, EvidenceItem, ResearchScenario, CounterArgument
-from app.db.models.macro import MacroSeries, MacroObservation
 from app.llm import get_llm_provider, ThesisResult
 
 
 def _build_macro_context(db: Session) -> dict:
-    series_list = db.query(MacroSeries).all()
-    cutoff = date_type.today() - timedelta(days=35)
-    snippets = []
-    for s in series_list:
-        latest = (
-            db.query(MacroObservation)
-            .filter(MacroObservation.macro_series_id == s.id, MacroObservation.value.isnot(None))
-            .order_by(MacroObservation.date.desc())
-            .first()
-        )
-        if not latest:
-            continue
-
-        prev = (
-            db.query(MacroObservation)
-            .filter(
-                MacroObservation.macro_series_id == s.id,
-                MacroObservation.value.isnot(None),
-                MacroObservation.date <= cutoff,
-            )
-            .order_by(MacroObservation.date.desc())
-            .first()
-        )
-
-        delta30d = None
-        delta30d_pct = None
-        if prev and prev.value and prev.value != 0:
-            delta30d = latest.value - prev.value
-            delta30d_pct = (latest.value - prev.value) / abs(prev.value) * 100
-
-        snippets.append({
-            "series_id": s.series_id,
-            "display_name": s.display_name or s.series_id,
-            "latest_value": latest.value,
-            "latest_date": latest.date.isoformat(),
-            "delta30d": delta30d,
-            "delta30d_pct": delta30d_pct,
-            "units": s.units or "",
-            "category": s.category,
-        })
-    return {"macro_snippets": snippets}
+    from app.services.series_snapshot import build_snippets
+    return {"macro_snippets": build_snippets(db)}
 
 
 async def create_thesis(db: Session, user_id: uuid.UUID, topic: str) -> Thesis:
