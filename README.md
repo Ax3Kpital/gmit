@@ -10,6 +10,7 @@
   <img alt="Python" src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white">
   <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white">
   <img alt="Docker" src="https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
 </p>
 
 <p align="center">
@@ -47,6 +48,7 @@
 - [Design principles and security](#design-principles-and-security)
 - [Known limitations](#known-limitations)
 - [Documentation](#documentation)
+- [License](#license)
 
 ## What it does
 
@@ -333,6 +335,10 @@ The full rules live in [`CLAUDE.md`](CLAUDE.md).
 - [`docs/DOMAIN_MODEL.md`](docs/DOMAIN_MODEL.md): entities and relationships
 - [`docs/ADR/`](docs/ADR/): architecture decision records
 - [`CLAUDE.md`](CLAUDE.md): project rules, design tokens and conventions
+
+## License
+
+[MIT](LICENSE). The code is open; the market data it fetches is not: respect each provider's terms (see the [data source register](docs/DATA_SOURCE_REGISTER.md)), in particular Yahoo Finance, which is for personal, non-commercial use only.
 
 ---
 
