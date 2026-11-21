@@ -39,6 +39,7 @@
     "noDataYet": "Date indisponibile",
     "phaseLabel": "Faza {phase}",
     "phaseNote": "Conexiunile la date vor fi active începând cu Faza 2.",
+    "phaseNote2": "Randamentele de mai jos sunt live via FRED. Piețele și scenariile urmează în Fazele 3–4.",
     "regime": {
       "growth": "Creștere",
       "inflation": "Inflație",
@@ -76,6 +77,39 @@
     "STALE": "Expirat",
     "UNAVAILABLE": "Indisponibil",
     "UNKNOWN": "Necunoscut"
+  },
+  "market": {
+    "title": "Piețe",
+    "subtitle": "Date EOD via FRED — Federal Reserve Bank of St. Louis",
+    "asOf": "Actualizat",
+    "instrument": "Instrument",
+    "lastPrice": "Ultimul preț",
+    "change1d": "Variație 1Z",
+    "date": "Data",
+    "status": "Status",
+    "commodities": "Mărfuri",
+    "equities": "Acțiuni",
+    "fx": "Valute",
+    "noData": "Nu sunt date disponibile. Verifică că FRED_API_KEY este setat în .env",
+    "attribution": "Sursă: FRED, Federal Reserve Bank of St. Louis. Date EOD cu lag de 1-2 zile lucrătoare."
+  },
+  "macro": {
+    "title": "Curba Randamentelor SUA",
+    "dgs10": "Randament 10Y",
+    "dgs2": "Randament 2Y",
+    "spread": "Spread 10Y-2Y"
+  },
+  "research": {
+    "title": "Bibliotecă Cercetare",
+    "subtitle": "Generează teze de investiții structurate cu context macro live",
+    "topicPlaceholder": "ex: Aur în context de rate în scădere și dolar slab",
+    "generate": "Generează teză",
+    "generating": "Generare...",
+    "errorEmpty": "Introduceți un subiect",
+    "errorFailed": "Generarea a eșuat. Verificați consola.",
+    "noTheses": "Nicio teză generată încă. Introduceți un subiect mai sus.",
+    "aiDisclaimer": "AI-generat. Nu este consiliere financiară. Verificați toate afirmațiile cu surse primare.",
+    "demoNotice": "Mod demo activ — setați LLM_PROVIDER=anthropic și ANTHROPIC_API_KEY în .env pentru analiză AI reală."
   },
   "common": {
     "loading": "Se încarcă...",

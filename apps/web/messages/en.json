@@ -39,6 +39,7 @@
     "noDataYet": "Data unavailable",
     "phaseLabel": "Phase {phase}",
     "phaseNote": "Data connections will be active starting from Phase 2.",
+    "phaseNote2": "Yields below are live via FRED. Markets and scenarios follow in Phases 3–4.",
     "regime": {
       "growth": "Growth",
       "inflation": "Inflation",
@@ -76,6 +77,39 @@
     "STALE": "Stale",
     "UNAVAILABLE": "Unavailable",
     "UNKNOWN": "Unknown"
+  },
+  "market": {
+    "title": "Markets",
+    "subtitle": "EOD data via FRED — Federal Reserve Bank of St. Louis",
+    "asOf": "As of",
+    "instrument": "Instrument",
+    "lastPrice": "Last Price",
+    "change1d": "1D Change",
+    "date": "Date",
+    "status": "Status",
+    "commodities": "Commodities",
+    "equities": "Equities",
+    "fx": "FX",
+    "noData": "No data available. Check that FRED_API_KEY is set in .env",
+    "attribution": "Source: FRED, Federal Reserve Bank of St. Louis. EOD data with 1-2 business day lag."
+  },
+  "macro": {
+    "title": "U.S. Yield Curve",
+    "dgs10": "10Y Yield",
+    "dgs2": "2Y Yield",
+    "spread": "10Y-2Y Spread"
+  },
+  "research": {
+    "title": "Research Library",
+    "subtitle": "Generate structured investment theses with live macro context",
+    "topicPlaceholder": "e.g. Gold in a falling-rate, weak-dollar environment",
+    "generate": "Generate thesis",
+    "generating": "Generating...",
+    "errorEmpty": "Enter a topic",
+    "errorFailed": "Generation failed. Check the console.",
+    "noTheses": "No theses generated yet. Enter a topic above.",
+    "aiDisclaimer": "AI-generated. Not financial advice. Verify all claims against primary sources.",
+    "demoNotice": "Demo mode active — set LLM_PROVIDER=anthropic and ANTHROPIC_API_KEY in .env for real AI analysis."
   },
   "common": {
     "loading": "Loading...",

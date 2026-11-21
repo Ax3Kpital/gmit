@@ -23,3 +23,24 @@ export interface User {
   id: string;
   email: string;
 }
+
+export interface MacroObservationPoint {
+  date: string;
+  value: number | null;
+}
+
+export interface MacroSeriesResponse {
+  series_id: string;
+  title: string;
+  provider: string;
+  source_url: string;
+  units: string;
+  data_status: DataStatus;
+  last_fetched_at: string | null;
+  latest: {
+    date: string;
+    value: number | null;
+    retrieved_at: string;
+  } | null;
+  history: MacroObservationPoint[];
+}
