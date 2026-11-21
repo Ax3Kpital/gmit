@@ -60,7 +60,7 @@ export default async function AgentActivityPage() {
   };
 
   return (
-    <AppShell title="Agenți AI">
+    <AppShell title="AI Agents">
       <div className="p-5 space-y-5 max-w-6xl mx-auto">
 
         <p className="text-xs" style={{ color: 'var(--muted)' }}>

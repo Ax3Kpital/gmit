@@ -38,7 +38,7 @@ export default async function AlertsPage() {
   ]);
 
   return (
-    <AppShell title="Alerte">
+    <AppShell title="Alerts">
       <div className="p-5 space-y-5 max-w-4xl mx-auto">
         <p className="text-xs" style={{ color: 'var(--muted)' }}>
           Price threshold and COT extreme positioning alerts

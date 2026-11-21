@@ -1,16 +1,11 @@
 import { Bell, Search, LogOut } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { getLocale } from 'next-intl/server';
-import { LanguageSwitcher } from './LanguageSwitcher';
 import { LogoutButton } from './LogoutButton';
 
 interface Props {
   title: string;
 }
 
-export async function TopBar({ title }: Props) {
-  const locale = await getLocale();
-
+export function TopBar({ title }: Props) {
   return (
     <header
       className="fixed top-0 right-0 flex items-center justify-between px-5 h-14 z-20"
@@ -47,9 +42,6 @@ export async function TopBar({ title }: Props) {
         >
           <Bell size={16} strokeWidth={1.75} />
         </button>
-
-        {/* Language switcher */}
-        <LanguageSwitcher currentLocale={locale} />
 
         {/* Logout */}
         <LogoutButton />

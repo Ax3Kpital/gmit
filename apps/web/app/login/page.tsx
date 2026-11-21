@@ -4,12 +4,9 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { login } from '@/app/actions';
-import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
-import { useLocale } from 'next-intl';
 
 export default function LoginPage() {
   const t = useTranslations();
-  const locale = useLocale();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,11 +29,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: 'var(--bg)' }}>
-      {/* Language switcher top-right */}
-      <div className="fixed top-4 right-4">
-        <LanguageSwitcher currentLocale={locale} />
-      </div>
-
       {/* Login card */}
       <div
         className="w-full max-w-sm rounded-xl p-8"

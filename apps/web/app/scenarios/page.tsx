@@ -44,7 +44,7 @@ export default async function ScenariosPage() {
   const hasData = allScenarios.length > 0;
 
   return (
-    <AppShell title="Scenarii">
+    <AppShell title="Scenarios">
       <div className="p-5 space-y-5 max-w-5xl mx-auto">
 
         <div className="flex items-center justify-between">

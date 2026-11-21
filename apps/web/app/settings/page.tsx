@@ -57,7 +57,7 @@ export default async function SettingsPage() {
   const telegramOk = status?.telegram_configured ?? false;
 
   return (
-    <AppShell title="Setări">
+    <AppShell title="Settings">
       <div className="p-5 space-y-6 max-w-3xl mx-auto">
 
         {/* Notification channel status */}

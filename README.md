@@ -21,7 +21,7 @@ Design principles: every value carries provider, timestamp, freshness label and 
 
 ## Stack
 
-Next.js 14 (TypeScript, Tailwind, next-intl RO/EN) · FastAPI · SQLAlchemy 2 · Alembic · PostgreSQL 16 · APScheduler · Docker Compose.
+Next.js 14 (TypeScript, Tailwind; English-only UI, messages in `apps/web/messages/en.json`) · FastAPI · SQLAlchemy 2 · Alembic · PostgreSQL 16 · APScheduler · Docker Compose.
 
 ## Quick start
 

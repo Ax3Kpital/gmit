@@ -1,22 +1,9 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { LOCALES, type Locale } from '@/i18n/request';
 
 const API_URL = process.env.API_URL ?? 'http://localhost:8000';
-
-export async function setLocale(locale: string) {
-  const safe: Locale = LOCALES.includes(locale as Locale) ? (locale as Locale) : 'ro';
-  cookies().set('GMIT_LOCALE', safe, {
-    path: '/',
-    maxAge: 365 * 24 * 60 * 60,
-    sameSite: 'lax',
-    httpOnly: false,
-  });
-  revalidatePath('/', 'layout');
-}
 
 export async function login(email: string, password: string) {
   const res = await fetch(`${API_URL}/api/auth/login`, {
