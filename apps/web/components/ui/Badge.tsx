@@ -4,7 +4,7 @@ const STATUS_STYLES: Record<DataStatus, { bg: string; color: string; text: strin
   REALTIME:                { bg: 'rgba(62,207,142,0.12)', color: 'var(--up)',     text: 'LIVE' },
   DELAYED:                 { bg: 'rgba(230,184,76,0.12)',  color: 'var(--warn)',  text: 'DLY' },
   END_OF_DAY:              { bg: 'rgba(139,152,168,0.12)', color: 'var(--muted)', text: 'EOD' },
-  PERIODIC_OFFICIAL_RELEASE:{ bg: 'rgba(61,156,240,0.12)', color: 'var(--accent)', text: 'OFF' },
+  PERIODIC_OFFICIAL_RELEASE:{ bg: 'rgba(61,156,240,0.12)', color: 'var(--accent)', text: 'OFFICIAL' },
   INDICATIVE:              { bg: 'rgba(139,152,168,0.12)', color: 'var(--muted)', text: 'IND' },
   STALE:                   { bg: 'rgba(230,184,76,0.15)',  color: 'var(--warn)',  text: 'STALE' },
   UNAVAILABLE:             { bg: 'rgba(240,113,120,0.12)', color: 'var(--down)',  text: 'N/A' },

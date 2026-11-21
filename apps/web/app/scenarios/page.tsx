@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { AppShell } from '@/components/layout/AppShell';
 import { serverFetch } from '@/lib/server-api';
+import { isFresh } from '@/lib/freshness';
 
 interface Scenario {
   id: string;
@@ -103,6 +104,9 @@ export default async function ScenariosPage() {
                   </div>
                   <span className="text-xs" style={{ color: 'var(--muted)' }}>
                     {new Date(thesis.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {!isFresh(thesis.created_at) && (
+                      <span className="ml-2 mono" style={{ color: 'var(--warn)' }}>OUTDATED</span>
+                    )}
                   </span>
                 </div>
                 <div>

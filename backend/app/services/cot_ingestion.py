@@ -1,8 +1,10 @@
 import logging
-from sqlalchemy.orm import Session
+from datetime import date, datetime, timedelta, timezone
+from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from app.db.session import SessionLocal
 from app.db.models.smart_money import CotInstrument, CotReport
+from app.core.freshness import expected_cot_report_date
 from app.providers.cftc import CftcProvider
 
 log = logging.getLogger("gmit.cot")
@@ -15,6 +17,29 @@ _ALL_INSTRUMENTS: list[dict] = [
     {"cftc_code": "043602", "display_name": "10-Year T-Note", "category": "rates", "exchange": "CBOT", "related_series_id": "DGS10"},
     {"cftc_code": "023651", "display_name": "Natural Gas", "category": "commodity", "exchange": "NYMEX", "related_series_id": "DHHNGSP"},
 ]
+
+
+def cot_fetch_due(newest: date | None, last_fetch: datetime | None, now: datetime) -> bool:
+    """True when CFTC should have published a newer report than we hold, or our data is a day old."""
+    return (newest is None or newest < expected_cot_report_date(now)
+            or last_fetch is None or now - last_fetch > timedelta(hours=24))
+
+
+async def run_cot_if_due() -> None:
+    """Cheap check run every 30 minutes: fetch when CFTC should have published a newer report
+    than we hold (polling continues until it arrives), and at least once a day for revisions."""
+    now = datetime.now(timezone.utc)
+    db = SessionLocal()
+    try:
+        newest = db.query(func.max(CotReport.report_date)).scalar()
+        last_fetch = db.query(func.max(CotReport.retrieved_at)).scalar()
+    finally:
+        db.close()
+    if not cot_fetch_due(newest, last_fetch, now):
+        log.debug("COT up to date (newest report %s); nothing to fetch", newest)
+        return
+    log.info("COT fetch due (held %s, expected %s)", newest, expected_cot_report_date(now))
+    await run_cot_ingestion()
 
 
 async def run_cot_ingestion() -> None:

@@ -67,6 +67,17 @@ def expected_cot_report_date(now: datetime) -> date:
     return d
 
 
+def cot_release_time(report_date: date) -> datetime:
+    """When the COT report for a given Tuesday becomes public (Friday of that week)."""
+    return datetime.combine(report_date + timedelta(days=3), _COT_RELEASE_UTC, tzinfo=timezone.utc)
+
+
+def next_cot_release(now: datetime) -> tuple[date, datetime]:
+    """(report date, release time) of the next COT report that is not public yet."""
+    nxt = expected_cot_report_date(now) + timedelta(days=7)
+    return nxt, cot_release_time(nxt)
+
+
 def classify_cot(report_date: date | None, now: datetime) -> str:
     if report_date is None:
         return "UNAVAILABLE"
@@ -88,3 +99,31 @@ def age_label(latest: date | None, now: datetime) -> str:
     if days == 1:
         return "1 day old"
     return f"{days} days old"
+
+
+def _month_start(d: date, back: int = 0) -> date:
+    m = d.year * 12 + (d.month - 1) - back
+    return date(m // 12, m % 12 + 1, 1)
+
+
+def classify_monthly(latest_period: date | None, now: datetime, publish_by_day: int = 10) -> Freshness:
+    """Monthly releases (e.g. GPR): month M is expected early in M+1, so allow `publish_by_day`."""
+    today = now.astimezone(timezone.utc).date()
+    expected = _month_start(today, 1 if today.day > publish_by_day else 2)
+    if latest_period is None:
+        return Freshness("UNAVAILABLE", 0, expected)
+    behind = (expected.year * 12 + expected.month) - (latest_period.year * 12 + latest_period.month)
+    if behind <= 0:
+        return Freshness("PERIODIC_OFFICIAL_RELEASE", 0, expected)
+    if behind == 1:
+        return Freshness("DELAYED", 1, expected)
+    return Freshness("STALE", behind, expected)
+
+
+def classify_fetch_age(last_fetched: datetime | None, now: datetime, max_age_hours: float,
+                       base_status: str = "DELAYED") -> str:
+    """Event/news feeds with no 'observation date': judged by how recently we fetched real data."""
+    if last_fetched is None:
+        return "UNAVAILABLE"
+    age_h = (now - last_fetched).total_seconds() / 3600
+    return base_status if age_h <= max_age_hours else "STALE"

@@ -5,8 +5,26 @@ import { AppShell } from '@/components/layout/AppShell';
 import { Panel } from '@/components/ui/Panel';
 import { CotCard, type CotItem } from '@/components/smart_money/CotCard';
 import { serverFetch } from '@/lib/server-api';
+import { DataStatusBadge } from '@/components/ui/Badge';
+import type { DataStatus } from '@/types';
+
+interface CotRelease {
+  positions_as_of: string;
+  published_at: string;
+  next_positions_as_of: string;
+  next_release_at: string;
+  data_status: string;
+  cadence: string;
+}
+
+function fmtUtc(iso: string): string {
+  const d = new Date(iso);
+  const day = d.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
+  return `${day} ${d.toISOString().slice(0, 10)} ${d.toISOString().slice(11, 16)} UTC`;
+}
 
 interface CotResponse {
+  release: CotRelease | null;
   items: CotItem[];
   source: string;
   lag_note: string;
@@ -41,6 +59,15 @@ export default async function SmartMoneyPage() {
           <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>
             CFTC Commitments of Traders — speculator net positioning + 52-week percentile
           </p>
+          {data?.release && (
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg px-3 py-2 text-xs"
+              style={{ background: 'var(--panel)', border: '1px solid var(--line)', color: 'var(--muted)' }}>
+              <DataStatusBadge status={data.release.data_status as DataStatus} />
+              <span>Weekly data: positions as of <b style={{ color: 'var(--text)' }}>{data.release.positions_as_of}</b></span>
+              <span>published {fmtUtc(data.release.published_at)}</span>
+              <span>next report (positions {data.release.next_positions_as_of}) expected <b style={{ color: 'var(--text)' }}>{fmtUtc(data.release.next_release_at)}</b></span>
+            </div>
+          )}
         </div>
 
         {items.length === 0 && (

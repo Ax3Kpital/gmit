@@ -93,6 +93,7 @@
 | **Cost** | Free |
 | **Terms** | Public data. Attribution: "Source: U.S. Commodity Futures Trading Commission". See: https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm |
 | **Freshness** | Data as of **Tuesday close**; published **Friday ~15:30 ET** — always show the Tuesday report date, not the retrieval date |
+| **Cadence check** | 2026-11-21: CFTC's own API had 2026-11-17 as its newest report, the same as GMIT. The platform polls every 30 minutes and fetches when a newer report is due (`run_cot_if_due`), so a new report is picked up shortly after the Friday release. Daily smart-money data is not available from CFTC |
 | **Rate limits** | Respect reasonable request rates; bulk historical files available |
 | **Coverage** | Gold (GC), Silver (SI), WTI Crude (CL), Natural Gas (NG), S&P 500 E-mini (ES), Nasdaq E-mini (NQ), EUR/USD, USD/JPY, others |
 | **Revision behavior** | Occasional corrections; re-download full weekly file |

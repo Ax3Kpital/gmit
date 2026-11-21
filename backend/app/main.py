@@ -84,15 +84,17 @@ async def startup():
     )
     logger.info("Live market ingestion started (quotes 10 min, Treasury yields 30 min)")
 
-    from app.services.cot_ingestion import run_cot_ingestion
+    from app.services.cot_ingestion import run_cot_if_due
     from app.services.alert_service import run_alert_checks
     _scheduler.add_job(
-        run_cot_ingestion,
+        run_cot_if_due,
         trigger="interval",
-        hours=6,
+        minutes=30,
         next_run_time=datetime.now(),
         id="cot_ingestion",
         replace_existing=True,
+        max_instances=1,
+        coalesce=True,
     )
     _scheduler.add_job(
         run_alert_checks,
@@ -101,7 +103,7 @@ async def startup():
         id="alert_checks",
         replace_existing=True,
     )
-    logger.info("COT ingestion scheduler started (6h interval, firing immediately)")
+    logger.info("COT check scheduled every 30 min (fetches when a new CFTC report is due)")
 
     from app.services.briefing_service import generate_daily_briefing
     from app.db.session import SessionLocal
@@ -146,12 +148,14 @@ async def startup():
     _scheduler.add_job(
         run_geo_ingestion,
         trigger="interval",
-        hours=4,
+        minutes=30,
+        max_instances=1,
+        coalesce=True,
         next_run_time=datetime.now(),
         id="geo_ingestion",
         replace_existing=True,
     )
-    logger.info("Geo ingestion scheduler started (4h interval, firing immediately)")
+    logger.info("Geo ingestion check scheduled every 30 min")
 
     if not _scheduler.running:
         _scheduler.start()

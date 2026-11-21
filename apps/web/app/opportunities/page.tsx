@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { AppShell } from '@/components/layout/AppShell';
 import { serverFetch } from '@/lib/server-api';
+import { isFresh, THESIS_MAX_AGE_DAYS } from '@/lib/freshness';
 
 interface Thesis {
   id: string;
@@ -59,7 +60,7 @@ export default async function OpportunitiesPage() {
   ]);
 
   const highConfidence = (theses ?? [])
-    .filter(t => t.confidence >= 55 && t.provider !== 'mock')
+    .filter(t => t.confidence >= 55 && t.provider !== 'mock' && isFresh(t.created_at))
     .sort((a, b) => b.confidence - a.confidence)
     .slice(0, 6);
 
@@ -153,9 +154,10 @@ export default async function OpportunitiesPage() {
             <div className="rounded-xl p-10 text-center"
               style={{ background: 'var(--panel)', border: '1px solid var(--line)' }}>
               <p className="text-sm" style={{ color: 'var(--muted)' }}>
-                No high-confidence theses yet.{' '}
-                <Link href="/library" style={{ color: 'var(--accent)' }}>Generate one</Link>
-                {' '}to see opportunities here.
+                No high-confidence theses from the last {THESIS_MAX_AGE_DAYS} days. Older theses are hidden
+                because they were written on outdated data.{' '}
+                <Link href="/library" style={{ color: 'var(--accent)' }}>Generate a fresh one</Link>
+                {' '}to see it here.
               </p>
             </div>
           ) : (

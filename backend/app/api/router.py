@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.routes import health, auth, providers, macro, market, research, smart_money, alerts, agent_runs, geo
+from app.api.routes import health, auth, providers, macro, market, research, smart_money, alerts, agent_runs, geo, data_health
 
 api_router = APIRouter()
 api_router.include_router(health.router, tags=["health"])
@@ -12,3 +12,4 @@ api_router.include_router(smart_money.router, tags=["smart-money"])
 api_router.include_router(alerts.router, tags=["alerts"])
 api_router.include_router(agent_runs.router, tags=["agent-runs"])
 api_router.include_router(geo.router, tags=["geo"])
+api_router.include_router(data_health.router, tags=["data-health"])

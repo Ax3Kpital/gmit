@@ -73,6 +73,10 @@ The backend tests cover macro signal and regime classification, geopolitical ris
 
 Prices are near-real-time: quotes refresh every 10 minutes, official Treasury yields every 30 minutes, and the UI re-reads them every 60 seconds. At weekends the newest data is Friday's close.
 
+Fetch schedule: prices every 10 minutes, Treasury yields every 30 minutes, FRED hourly, GDELT and the geopolitics job every 30 minutes (only regions without recent data are requested, to respect GDELT's rate limit), the COT check every 30 minutes, and the briefing at 07:00 UTC and after the US close. The **Data Providers** page shows, for every source, the latest data date, the date expected right now, the freshness status, the last fetch and the next scheduled run (API: `GET /api/data-health`).
+
+Smart-money (COT) data is weekly by design: CFTC publishes positions as of Tuesday every Friday at about 15:30 ET. The platform polls every 30 minutes and fetches as soon as a new report is due; the Smart Money page shows the report date, when it was published and when the next one is expected. GMIT cannot show newer COT data than CFTC has released.
+
 Every series carries a freshness label computed from the date of its newest observation, not from when it was downloaded: current, `DELAYED` (one session behind) or `STALE` (two or more). COT is judged against CFTC's Friday release. FRED stays as history and fallback because its market series lag by days; it is never spliced into the live series, since EIA spot and futures prices are different instruments. Rationale in [`docs/ADR/ADR-004-live-market-data-and-freshness.md`](docs/ADR/ADR-004-live-market-data-and-freshness.md).
 
 ## Data providers

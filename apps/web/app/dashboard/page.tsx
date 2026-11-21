@@ -9,6 +9,7 @@ import { StatusTile } from '@/components/ui/StatusTile';
 import { DataStatusBadge } from '@/components/ui/Badge';
 import { YieldCurvePanel } from '@/components/macro/YieldCurvePanel';
 import { serverFetch } from '@/lib/server-api';
+import { isFresh } from '@/lib/freshness';
 
 interface MacroSignals {
   yield_10y: number | null;
@@ -76,6 +77,7 @@ interface ThesisWithScenarios {
   id: string;
   topic: string;
   confidence: number;
+  created_at: string;
   scenarios: { id: string; name: string; probability: number }[];
 }
 
@@ -97,7 +99,7 @@ export default async function DashboardPage() {
     serverFetch<ThesisWithScenarios[]>('/api/research/theses/with-scenarios'),
     serverFetch<{ items: CotExtreme[] }>('/api/smart-money/cot'),
   ]);
-  const latestThesis = (theses ?? []).find(th => th.scenarios.length > 0) ?? null;
+  const latestThesis = (theses ?? []).find(th => th.scenarios.length > 0 && isFresh(th.created_at)) ?? null;
   const extremes = (cot?.items ?? []).filter(i => (i.sentiment ?? '').startsWith('extreme')).slice(0, 4);
 
   const regimeColor = signals ? REGIME_COLOR[signals.macro_regime] ?? '#8b98a8' : '#8b98a8';
@@ -239,7 +241,7 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <div className="p-4 flex items-center justify-center min-h-32">
-                <span className="text-xs" style={{ color: 'var(--muted)' }}>No theses yet — generate one in the Research Library</span>
+                <span className="text-xs" style={{ color: 'var(--muted)' }}>No recent theses — generate a fresh one in the Research Library</span>
               </div>
             )}
           </Panel>

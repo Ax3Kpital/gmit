@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, Cookie, HTTPException
 from sqlalchemy.orm import Session
-from app.core.freshness import classify_cot
+from app.core.freshness import classify_cot, cot_release_time, next_cot_release
 from app.db.session import get_db
 from app.services import auth_service
 from app.db.models.smart_money import CotInstrument, CotReport
@@ -106,4 +106,20 @@ def get_cot_overview(
             "history": history,
         })
 
-    return {"items": result, "source": "CFTC Commitments of Traders — Legacy Futures Only", "lag_note": "Data reflects Tuesday positions, published Friday."}
+    now = datetime.now(timezone.utc)
+    newest = max((i["latest_report_date"] for i in result if i.get("latest_report_date")), default=None)
+    release = None
+    if newest:
+        from datetime import date as _date
+        nd = _date.fromisoformat(newest)
+        nxt_report, nxt_release = next_cot_release(now)
+        release = {
+            "positions_as_of": newest,
+            "published_at": cot_release_time(nd).isoformat(),
+            "next_positions_as_of": nxt_report.isoformat(),
+            "next_release_at": nxt_release.isoformat(),
+            "data_status": classify_cot(nd, now),
+            "cadence": "Weekly: CFTC publishes every Friday ~15:30 ET for the preceding Tuesday.",
+        }
+    return {"items": result, "source": "CFTC Commitments of Traders — Legacy Futures Only",
+            "lag_note": "Data reflects Tuesday positions, published Friday.", "release": release}

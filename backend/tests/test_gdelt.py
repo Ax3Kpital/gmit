@@ -4,6 +4,16 @@ import httpx
 from app.providers import gdelt
 
 
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def _reset_block():
+    gdelt._blocked_until = 0.0
+    yield
+    gdelt._blocked_until = 0.0
+
+
 def _patch(monkeypatch, handler):
     real = httpx.AsyncClient
 
@@ -87,3 +97,20 @@ async def test_region_tone_all_failures_is_unavailable(monkeypatch):
     assert res.data_status == "UNAVAILABLE"
     assert res.avg_tone is None
     assert res.articles == []
+
+
+async def test_persistent_429_pauses_further_requests(monkeypatch):
+    _no_wait(monkeypatch)
+    calls = []
+
+    def handler(req):
+        calls.append(req)
+        return httpx.Response(429)
+
+    _patch(monkeypatch, handler)
+    async with httpx.AsyncClient() as client:
+        await gdelt._get(client, gdelt._DOC_BASE, {"query": "x"})        # 429 twice -> backoff starts
+        sent = len(calls)
+        with pytest.raises(gdelt.GdeltBlocked):
+            await gdelt._get(client, gdelt._DOC_BASE, {"query": "y"})
+    assert len(calls) == sent                                            # nothing was sent while paused

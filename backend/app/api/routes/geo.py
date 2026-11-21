@@ -4,7 +4,11 @@ from app.db.session import get_db
 from app.services import auth_service
 from app.db.models.geo import GeoEvent, GeoRiskIndex, GeoNewsArticle
 from app.analysis.geo_analysis import compute_region_risk
+from datetime import datetime, timezone
+
+from app.core.freshness import classify_fetch_age
 from app.providers.gdelt import REGIONS
+from app.services.data_health import GDELT_MAX_AGE_HOURS
 
 router = APIRouter(prefix="/geo")
 _SESSION_COOKIE = "gmit_session"
@@ -28,18 +32,23 @@ def get_risk_summary(
     """Computed risk level per region — from latest GDELT geo_events row."""
     result = []
     for region_key, region_meta in REGIONS.items():
+        # newest row that carries real tone data: a later failed fetch must not hide it
         latest = (
             db.query(GeoEvent)
-            .filter(GeoEvent.region_key == region_key)
-            .order_by(GeoEvent.event_date.desc(), GeoEvent.retrieved_at.desc())
+            .filter(GeoEvent.region_key == region_key, GeoEvent.avg_tone.isnot(None))
+            .order_by(GeoEvent.retrieved_at.desc())
             .first()
         )
+        status = "UNAVAILABLE"
+        if latest:
+            status = classify_fetch_age(latest.retrieved_at, datetime.now(timezone.utc),
+                                        GDELT_MAX_AGE_HOURS, latest.data_status or "DELAYED")
         risk = compute_region_risk(
             region_key=region_key,
             region_label=region_meta["label"],
             avg_tone=latest.avg_tone if latest else None,
             article_count=latest.article_count if latest else None,
-            data_status=latest.data_status if latest else "UNAVAILABLE",
+            data_status=status,
         )
         articles = []
         if latest:

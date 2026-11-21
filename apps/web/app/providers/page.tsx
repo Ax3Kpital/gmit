@@ -3,7 +3,9 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { AppShell } from '@/components/layout/AppShell';
 import { Panel } from '@/components/ui/Panel';
-import { ProviderStatusBadge } from '@/components/ui/Badge';
+import { ProviderStatusBadge, DataStatusBadge } from '@/components/ui/Badge';
+import { serverFetch } from '@/lib/server-api';
+import type { DataStatus } from '@/types';
 
 interface Provider {
   code: string;
@@ -14,6 +16,32 @@ interface Provider {
   configured: boolean;
   status: string;
   active_phase: boolean;
+}
+
+interface HealthItem {
+  key: string;
+  label: string;
+  cadence: string;
+  fallback: boolean;
+  latest_data: string | null;
+  expected: string | null;
+  status: string;
+  last_fetched_at: string | null;
+  next_run_at: string | null;
+  detail: string;
+}
+
+interface DataHealth {
+  as_of: string;
+  healthy: boolean;
+  attention: string[];
+  items: HealthItem[];
+}
+
+function hhmm(iso: string | null): string {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return `${d.toISOString().slice(5, 10)} ${d.toISOString().slice(11, 16)}`;
 }
 
 async function fetchProviders(): Promise<Provider[]> {
@@ -34,6 +62,7 @@ export default async function ProvidersPage() {
 
   const t = await getTranslations('providers');
   const providers = await fetchProviders();
+  const health = await serverFetch<DataHealth>('/api/data-health');
 
   return (
     <AppShell title={t('title')}>
@@ -41,6 +70,35 @@ export default async function ProvidersPage() {
         <p className="text-sm mb-5" style={{ color: 'var(--muted)' }}>
           {t('subtitle')}
         </p>
+
+        {health && (
+          <div className="mb-6 rounded-xl overflow-hidden" style={{ background: 'var(--panel)', border: '1px solid var(--line)' }}>
+            <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--line)' }}>
+              <span className="text-xs uppercase tracking-wider" style={{ color: 'var(--muted)' }}>Data freshness</span>
+              <span className="text-xs mono" style={{ color: health.healthy ? 'var(--up)' : 'var(--warn)' }}>
+                {health.healthy ? 'ALL SOURCES CURRENT' : `ATTENTION: ${health.attention.join(', ')}`}
+              </span>
+            </div>
+            <div className="grid px-4 py-2 text-xs uppercase tracking-wider"
+              style={{ gridTemplateColumns: '2.2fr 1fr 1fr 1fr 1fr 1fr', gap: '8px', color: 'var(--muted)', borderBottom: '1px solid var(--line)' }}>
+              <span>Source</span><span>Latest data</span><span>Expected</span><span>Status</span><span>Last fetched (UTC)</span><span>Next run (UTC)</span>
+            </div>
+            {health.items.map(i => (
+              <div key={i.key} className="px-4 py-3" style={{ borderBottom: '1px solid var(--line)', opacity: i.fallback ? 0.6 : 1 }}>
+                <div className="grid items-center text-xs" style={{ gridTemplateColumns: '2.2fr 1fr 1fr 1fr 1fr 1fr', gap: '8px' }}>
+                  <span style={{ color: 'var(--text)' }}>{i.label}{i.fallback ? ' · fallback' : ''}
+                    <span className="block mono" style={{ color: 'var(--muted)' }}>{i.cadence}</span></span>
+                  <span className="mono" style={{ color: 'var(--text)' }}>{i.latest_data ?? '—'}</span>
+                  <span className="mono" style={{ color: 'var(--muted)' }}>{i.expected ?? '—'}</span>
+                  <span><DataStatusBadge status={i.status as DataStatus} /></span>
+                  <span className="mono" style={{ color: 'var(--muted)' }}>{hhmm(i.last_fetched_at)}</span>
+                  <span className="mono" style={{ color: 'var(--muted)' }}>{hhmm(i.next_run_at)}</span>
+                </div>
+                <p className="mt-1 text-xs" style={{ color: 'var(--muted)', opacity: 0.8 }}>{i.detail}</p>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {providers.map(p => (

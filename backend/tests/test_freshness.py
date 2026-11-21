@@ -87,3 +87,49 @@ def test_age_label():
     assert f.age_label(date(2026, 11, 20), SATURDAY) == "1 day old"
     assert f.age_label(date(2026, 11, 13), SATURDAY) == "8 days old"
     assert f.age_label(None, SATURDAY) == "no data"
+
+
+def test_cot_release_time_is_friday_for_the_tuesday_report():
+    assert f.cot_release_time(date(2026, 11, 17)) == utc(2026, 11, 20, 20, 30)
+
+
+def test_next_cot_release_is_a_week_after_the_newest_published():
+    report, release = f.next_cot_release(utc(2026, 11, 21, 10, 0))         # Saturday after the 20th release
+    assert report == date(2026, 11, 24) and release == utc(2026, 11, 27, 20, 30)
+    report, release = f.next_cot_release(utc(2026, 11, 20, 12, 0))         # Friday before the release
+    assert report == date(2026, 11, 17) and release == utc(2026, 11, 20, 20, 30)
+
+
+@pytest.mark.parametrize("latest,now,status", [
+    (date(2026, 10, 1), utc(2026, 11, 21), "PERIODIC_OFFICIAL_RELEASE"),    # October out by early November
+    (date(2026, 9, 1), utc(2026, 11, 21), "DELAYED"),
+    (date(2026, 8, 1), utc(2026, 11, 21), "STALE"),
+    (date(2026, 10, 1), utc(2026, 11, 5), "PERIODIC_OFFICIAL_RELEASE"),     # grace period early in the month
+    (date(2026, 9, 1), utc(2026, 11, 5), "PERIODIC_OFFICIAL_RELEASE"),
+    (date(2026, 12, 1), utc(2027, 1, 20), "PERIODIC_OFFICIAL_RELEASE"),     # year boundary
+    (date(2026, 11, 1), utc(2027, 1, 20), "DELAYED"),
+    (None, utc(2026, 11, 21), "UNAVAILABLE"),
+])
+def test_classify_monthly(latest, now, status):
+    assert f.classify_monthly(latest, now).status == status
+
+
+def test_classify_fetch_age():
+    now = utc(2026, 11, 21, 12, 0)
+    assert f.classify_fetch_age(utc(2026, 11, 21, 10, 0), now, 8) == "DELAYED"
+    assert f.classify_fetch_age(utc(2026, 11, 21, 3, 0), now, 8) == "STALE"
+    assert f.classify_fetch_age(None, now, 8) == "UNAVAILABLE"
+
+
+def test_cot_fetch_due_decision():
+    from app.services.cot_ingestion import cot_fetch_due
+    now = utc(2026, 11, 21, 12, 0)                                           # Saturday, report of the 17th is public
+    fresh_fetch = utc(2026, 11, 21, 10, 0)
+    assert cot_fetch_due(date(2026, 11, 17), fresh_fetch, now) is False      # up to date, fetched recently
+    assert cot_fetch_due(date(2026, 11, 10), fresh_fetch, now) is True       # newer report should exist: keep polling
+    assert cot_fetch_due(date(2026, 11, 17), utc(2026, 11, 20, 9, 0), now) is True   # >24 h: catch revisions
+    assert cot_fetch_due(None, None, now) is True
+    friday_before = utc(2026, 11, 20, 12, 0)                                 # release not due yet
+    assert cot_fetch_due(date(2026, 11, 10), utc(2026, 11, 20, 11, 0), friday_before) is False
+    friday_after = utc(2026, 11, 20, 20, 45)                                 # just after the release: poll
+    assert cot_fetch_due(date(2026, 11, 10), utc(2026, 11, 20, 20, 20), friday_after) is True

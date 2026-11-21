@@ -76,12 +76,20 @@ class RegionToneResult:
 # dropped connections. All requests go through one throttle, with a single retry on 429.
 _MIN_INTERVAL_S = 5.5
 _RETRY_AFTER_429_S = 15.0
+_BACKOFF_AFTER_BLOCK_S = 30 * 60.0    # stop asking for 30 minutes once we are rate-limited
 _throttle_lock = asyncio.Lock()
 _last_request_at = 0.0
+_blocked_until = 0.0
+
+
+class GdeltBlocked(Exception):
+    """GDELT rate-limited us recently; further requests would only prolong the block."""
 
 
 async def _get(client: httpx.AsyncClient, url: str, params: dict) -> httpx.Response:
-    global _last_request_at
+    global _last_request_at, _blocked_until
+    if time.monotonic() < _blocked_until:
+        raise GdeltBlocked("GDELT rate limit: pausing requests")
     for attempt in (1, 2):
         async with _throttle_lock:
             wait = _MIN_INTERVAL_S - (time.monotonic() - _last_request_at)
@@ -93,6 +101,10 @@ async def _get(client: httpx.AsyncClient, url: str, params: dict) -> httpx.Respo
             logger.warning("GDELT rate limit (429); retrying once in %.0fs", _RETRY_AFTER_429_S)
             await asyncio.sleep(_RETRY_AFTER_429_S)
             continue
+        if resp.status_code == 429:
+            _blocked_until = time.monotonic() + _BACKOFF_AFTER_BLOCK_S
+            logger.warning("GDELT still rate-limiting; pausing requests for %.0f min",
+                           _BACKOFF_AFTER_BLOCK_S / 60)
         return resp
     return resp
 
@@ -211,6 +223,6 @@ async def fetch_region_tone(region_key: str, timespan: str = "2weeks") -> Region
     )
 
 
-async def fetch_all_regions(timespan: str = "2weeks") -> list[RegionToneResult]:
-    """Fetch tone data for all regions, one at a time (GDELT rate limit)."""
-    return [await fetch_region_tone(key, timespan) for key in REGIONS]
+async def fetch_all_regions(timespan: str = "2weeks", keys: list[str] | None = None) -> list[RegionToneResult]:
+    """Fetch tone data for the given regions (default all), one at a time (GDELT rate limit)."""
+    return [await fetch_region_tone(key, timespan) for key in (keys if keys is not None else REGIONS)]
