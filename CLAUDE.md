@@ -142,5 +142,5 @@ cd apps/web && npm run lint && npx tsc --noEmit
 
 ## Related projects (do not modify)
 
-- `/Users/pingutheboss/bvb_project` — BVB AI OS (separate project, M0-M7 complete)
-- `/Users/pingutheboss/bvb-research` — DCF Calculator reference UI
+- `../bvb_project` — BVB AI OS (separate project, M0-M7 complete)
+- `../bvb-research` — DCF Calculator reference UI
