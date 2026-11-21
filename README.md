@@ -27,11 +27,9 @@
 ## Demo
 
 <p align="center">
-  <a href="https://github.com/Ax3Kpital/gmit/raw/main/docs/media/gmit-trailer.mp4">
-    <img src="docs/media/gmit-trailer-preview.webp" alt="GMIT trailer (click for the full-quality MP4)" width="100%">
-  </a>
+  <img src="docs/media/gmit-trailer-preview.webp" alt="GMIT trailer: a 25-second walkthrough of every feature" width="100%">
   <br>
-  <sub>25-second walkthrough of every feature. <a href="https://github.com/Ax3Kpital/gmit/raw/main/docs/media/gmit-trailer.mp4">Open the full-quality MP4</a>.</sub>
+  <sub>25-second walkthrough of every feature. <a href="docs/media/gmit-trailer.mp4">Download the full-quality MP4</a> (12 MB, 1080p, with soundtrack).</sub>
 </p>
 
 ## Contents
