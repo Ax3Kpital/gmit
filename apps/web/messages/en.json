@@ -109,7 +109,7 @@
     "errorFailed": "Generation failed. Check the console.",
     "noTheses": "No theses generated yet. Enter a topic above.",
     "aiDisclaimer": "AI-generated. Not financial advice. Verify all claims against primary sources.",
-    "demoNotice": "Demo mode active — set LLM_PROVIDER=anthropic and ANTHROPIC_API_KEY in .env for real AI analysis."
+    "demoNotice": "Rules engine active: deterministic and free. Set LLM_PROVIDER=anthropic and ANTHROPIC_API_KEY in .env to use an LLM."
   },
   "common": {
     "loading": "Loading...",

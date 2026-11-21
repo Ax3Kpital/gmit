@@ -72,16 +72,33 @@ function delta(v: number | null, unit = '', decimals = 1) {
   return `${sign}${v.toFixed(decimals)}${unit}`;
 }
 
+interface ThesisWithScenarios {
+  id: string;
+  topic: string;
+  confidence: number;
+  scenarios: { id: string; name: string; probability: number }[];
+}
+
+interface CotExtreme {
+  display_name: string;
+  sentiment: string | null;
+  percentile_52w: number | null;
+}
+
 export default async function DashboardPage() {
   const session = cookies().get('gmit_session');
   if (!session) redirect('/login');
 
   const t = await getTranslations();
 
-  const [signals, briefing] = await Promise.all([
+  const [signals, briefing, theses, cot] = await Promise.all([
     serverFetch<MacroSignals>('/api/macro/signals'),
     serverFetch<Briefing>('/api/briefings/latest'),
+    serverFetch<ThesisWithScenarios[]>('/api/research/theses/with-scenarios'),
+    serverFetch<{ items: CotExtreme[] }>('/api/smart-money/cot'),
   ]);
+  const latestThesis = (theses ?? []).find(th => th.scenarios.length > 0) ?? null;
+  const extremes = (cot?.items ?? []).filter(i => (i.sentiment ?? '').startsWith('extreme')).slice(0, 4);
 
   const regimeColor = signals ? REGIME_COLOR[signals.macro_regime] ?? '#8b98a8' : '#8b98a8';
   const regimeLabel = signals ? REGIME_LABEL[signals.macro_regime] ?? signals.macro_regime.toUpperCase() : '—';
@@ -207,14 +224,44 @@ export default async function DashboardPage() {
         {/* Active scenarios + opportunities */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <Panel title={t('commandCenter.activeScenarios')}>
-            <div className="p-4 flex items-center justify-center min-h-32">
-              <span className="text-xs" style={{ color: 'var(--muted)' }}>Phase 7</span>
-            </div>
+            {latestThesis ? (
+              <div className="p-4 space-y-2">
+                <div className="text-xs" style={{ color: 'var(--muted)' }}>
+                  {latestThesis.topic} · confidence {latestThesis.confidence}%
+                </div>
+                {latestThesis.scenarios.slice(0, 3).map(sc => (
+                  <div key={sc.id} className="flex items-center justify-between text-sm">
+                    <span style={{ color: 'var(--text)' }}>{sc.name}</span>
+                    <span className="mono text-xs" style={{ color: 'var(--accent)' }}>{sc.probability}%</span>
+                  </div>
+                ))}
+                <Link href="/scenarios" className="text-xs" style={{ color: 'var(--accent)' }}>All scenarios →</Link>
+              </div>
+            ) : (
+              <div className="p-4 flex items-center justify-center min-h-32">
+                <span className="text-xs" style={{ color: 'var(--muted)' }}>No theses yet — generate one in the Research Library</span>
+              </div>
+            )}
           </Panel>
           <Panel title={t('commandCenter.topOpportunities')}>
-            <div className="p-4 flex items-center justify-center min-h-32">
-              <span className="text-xs" style={{ color: 'var(--muted)' }}>Phase 7</span>
-            </div>
+            {extremes.length > 0 ? (
+              <div className="p-4 space-y-2">
+                {extremes.map(e => (
+                  <div key={e.display_name} className="flex items-center justify-between text-sm">
+                    <span style={{ color: 'var(--text)' }}>{e.display_name}</span>
+                    <span className="mono text-xs" style={{ color: 'var(--down)' }}>
+                      {(e.sentiment ?? '').replace('_', ' ').toUpperCase()}
+                      {e.percentile_52w !== null ? ` · ${Math.round(e.percentile_52w)}th pct` : ''}
+                    </span>
+                  </div>
+                ))}
+                <Link href="/opportunities" className="text-xs" style={{ color: 'var(--accent)' }}>All opportunities →</Link>
+              </div>
+            ) : (
+              <div className="p-4 flex items-center justify-center min-h-32">
+                <span className="text-xs" style={{ color: 'var(--muted)' }}>No extreme positioning right now</span>
+              </div>
+            )}
           </Panel>
         </div>
 

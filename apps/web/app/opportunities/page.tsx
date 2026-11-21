@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
@@ -49,6 +50,7 @@ function OppBadge({ label, color }: { label: string; color: string }) {
 export default async function OpportunitiesPage() {
   const session = cookies().get('gmit_session');
   if (!session) redirect('/login');
+  const tNav = await getTranslations('nav');
 
   const [theses, signals, cotData] = await Promise.all([
     serverFetch<Thesis[]>('/api/research/theses') ?? [],
@@ -76,7 +78,7 @@ export default async function OpportunitiesPage() {
   }
 
   return (
-    <AppShell title="Oportunități">
+    <AppShell title={tNav('opportunities')}>
       <div className="p-5 space-y-5 max-w-5xl mx-auto">
 
         <div className="flex items-center justify-between">

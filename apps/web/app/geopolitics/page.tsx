@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { AppShell } from '@/components/layout/AppShell';
@@ -91,13 +92,16 @@ export default async function GeopoliticsPage() {
   const session = cookies().get('gmit_session');
   if (!session) redirect('/login');
 
+  const tNav = await getTranslations('nav');
   const [riskData, indexData] = await Promise.all([
     serverFetch<RiskSummaryResponse>('/api/geo/risk-summary'),
     serverFetch<RiskIndexResponse>('/api/geo/risk-index?months=36'),
   ]);
 
   const regions = riskData?.regions ?? [];
-  const hasLiveData = regions.some(r => r.data_status !== 'UNAVAILABLE');
+  const liveCount = regions.filter(r => r.data_status !== 'UNAVAILABLE').length;
+  const hasLiveData = liveCount > 0;
+  const allLive = regions.length > 0 && liveCount === regions.length;
 
   // Sort: critical → elevated → moderate → low
   const ORDER = { critical: 0, elevated: 1, moderate: 2, low: 3, unknown: 4 };
@@ -110,7 +114,7 @@ export default async function GeopoliticsPage() {
   const gprLatestPeriod = indexData?.latest_period;
 
   return (
-    <AppShell title="Geopolitică">
+    <AppShell title={tNav('geopolitics')}>
       <div className="p-5 space-y-5 max-w-5xl mx-auto">
 
         {/* Header */}
@@ -127,7 +131,7 @@ export default async function GeopoliticsPage() {
                 border: hasLiveData ? '1px solid rgba(61,156,240,0.3)' : '1px solid var(--line)',
               }}
             >
-              {hasLiveData ? 'LIVE — GDELT' : 'MANUAL FALLBACK'}
+              {allLive ? 'LIVE — GDELT' : hasLiveData ? `PARTIAL — GDELT ${liveCount}/${regions.length}` : 'MANUAL FALLBACK'}
             </span>
           </div>
         </div>

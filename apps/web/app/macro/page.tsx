@@ -75,7 +75,7 @@ export default async function MacroPage() {
       <div className="p-5 space-y-5 max-w-5xl mx-auto">
 
         <p className="text-xs" style={{ color: 'var(--muted)' }}>
-          US macro signals — FRED data via Federal Reserve Bank of St. Louis. EOD, 1-2 day lag.
+          US macro signals — live quotes (Yahoo Finance), official Treasury yields, FRED as fallback.
           {s?.as_of && <span className="ml-2">As of {s.as_of}.</span>}
         </p>
 
@@ -156,7 +156,7 @@ export default async function MacroPage() {
         <YieldCurvePanel />
 
         <p className="text-xs" style={{ color: 'var(--muted)', opacity: 0.5 }}>
-          Source: FRED, Federal Reserve Bank of St. Louis — fred.stlouisfed.org. Not financial advice.
+          Sources: Yahoo Finance, US Treasury, FRED (Federal Reserve Bank of St. Louis). Not financial advice.
         </p>
       </div>
     </AppShell>

@@ -96,7 +96,7 @@ function SeriesCard({ label, data, last }: SeriesCardProps) {
       {data?.source_url && (
         <a href={data.source_url} target="_blank" rel="noopener noreferrer"
           className="text-xs mt-0.5" style={{ color: 'var(--accent)', opacity: 0.7 }}>
-          FRED ↗
+          {data.latest?.provider?.startsWith('us_treasury') ? 'US Treasury' : 'FRED'} ↗
         </a>
       )}
     </div>

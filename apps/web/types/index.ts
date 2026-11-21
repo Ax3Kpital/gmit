@@ -41,6 +41,8 @@ export interface MacroSeriesResponse {
     date: string;
     value: number | null;
     retrieved_at: string;
+    provider?: string;
+    age?: string;
   } | null;
   history: MacroObservationPoint[];
 }
