@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     app_env: str = "development"
     cors_origins: list[str] = ["http://localhost:3000"]
 
-    llm_provider: str = "mock"
+    llm_provider: str = "rules"
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-sonnet-5-5"
     openai_api_key: str = ""
