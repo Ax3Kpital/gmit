@@ -15,7 +15,7 @@ Build vertical slices, not horizontal layers. One end-to-end feature that works 
 **Goal:** Establish foundation documents. No application code yet.
 
 Tasks:
-- [x] Create `/Users/pingutheboss/gmit` repository
+- [x] Create `gmit` repository
 - [x] `CLAUDE.md` with project rules, commands and design tokens
 - [x] `docs/IMPLEMENTATION_PLAN.md` (this file)
 - [x] `docs/DATA_SOURCE_REGISTER.md` skeleton
