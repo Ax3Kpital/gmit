@@ -1,0 +1,24 @@
+{$DOMAIN} {
+    # HTTPS is automatic via Let's Encrypt — just set DOMAIN in .env
+
+    # API routes → FastAPI backend
+    handle /api/* {
+        reverse_proxy backend:8000
+    }
+
+    # All other routes → Next.js frontend
+    handle {
+        reverse_proxy web:3000
+    }
+
+    # Compression
+    encode gzip
+
+    # Security headers
+    header {
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy strict-origin-when-cross-origin
+        -Server
+    }
+}

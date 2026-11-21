@@ -11,9 +11,9 @@ A personal macro-financial research terminal: monitors global macro data, commod
 | Phase | Status | Description |
 |---|---|---|
 | **Phase 0** | ✅ Complete | Repository, CLAUDE.md, plan, data-source register, domain model, ADRs |
-| **Phase 1** | 🔲 Next | Application foundation: Next.js + FastAPI + PostgreSQL + Docker Compose + auth |
-| **Phase 2** | 🔲 | First real-data slice: FRED macro series, end-to-end |
-| **Phase 3** | 🔲 | Market watchlist (EOD/delayed, labeled) |
+| **Phase 1** | ✅ Complete | Application foundation: Next.js + FastAPI + PostgreSQL + Docker Compose + auth |
+| **Phase 2** | ✅ Complete | FRED macro series live: DGS10, DGS2, T10Y2Y — yield curve panel + sparklines |
+| **Phase 3** | ✅ Complete | Market watchlist live: WTI, Brent, HH gas, S&P 500, Nasdaq, 4 FX pairs — EOD via FRED |
 | **Phase 4** | 🔲 | Theses, scenarios, AI research agents |
 | **Phase 5** | 🔲 | Smart-money v1: CFTC COT + SEC 13F + alerts |
 | **Phase 6** | 🔲 | Agent observability UI + daily briefing |
