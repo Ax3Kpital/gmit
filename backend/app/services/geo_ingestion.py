@@ -1,13 +1,14 @@
 """Phase 8 — Geopolitics ingestion: GDELT tone/articles + GPR Index."""
 import logging
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
+from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import Session
 
 from app.db.models.geo import GeoEvent, GeoRiskIndex, GeoNewsArticle
 from app.db.session import SessionLocal
-from app.providers.gdelt import fetch_all_regions, REGIONS
+from app.providers.gdelt import fetch_all_regions
 from app.providers.gpr import fetch_gpr_index
 
 log = logging.getLogger("gmit.geo")
@@ -23,7 +24,29 @@ async def run_geo_ingestion() -> None:
     log.info("Geo ingestion complete")
 
 
+# GDELT throttles clients hard (HTTP 429), and dev restarts re-run ingestion immediately.
+# Skip the GDELT pass when real tone data was already stored recently.
+_GDELT_MIN_AGE = timedelta(hours=3)
+
+
+def _recent_gdelt_data_exists() -> bool:
+    db: Session = SessionLocal()
+    try:
+        cutoff = datetime.now(timezone.utc) - _GDELT_MIN_AGE
+        row = db.execute(
+            select(GeoEvent.id).where(
+                GeoEvent.avg_tone.is_not(None), GeoEvent.retrieved_at > cutoff
+            ).limit(1)
+        ).first()
+        return row is not None
+    finally:
+        db.close()
+
+
 async def _ingest_gdelt() -> None:
+    if _recent_gdelt_data_exists():
+        log.info("GDELT data fresher than %s already stored; skipping GDELT fetch", _GDELT_MIN_AGE)
+        return
     results = await fetch_all_regions(timespan="2weeks")
     today = date.today()
     db: Session = SessionLocal()

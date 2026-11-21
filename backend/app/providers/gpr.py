@@ -1,7 +1,7 @@
 """GPR Index provider — downloads Geopolitical Risk Index from Iacoviello (2026).
 
 Source: https://www.matteoiacoviello.com/gpr.htm
-File:   data_gpr_export_with_groups.xls (updated monthly)
+File:   data_gpr_export.xls (legacy Excel format, updated monthly)
 License: free for academic/research use, citation required.
 """
 import io
@@ -13,10 +13,9 @@ import httpx
 
 logger = logging.getLogger("gmit.gpr")
 
-_GPR_URL = "https://www.matteoiacoviello.com/gpr_files/data_gpr_export_with_groups.xls"
+_GPR_URL = "https://www.matteoiacoviello.com/gpr_files/data_gpr_export.xls"
 
-# Fallback — the CSV export (sometimes available alongside the Excel)
-_GPR_CSV_URL = "https://www.matteoiacoviello.com/gpr_files/data_gpr_export_with_groups.xlsx"
+_XLS_MAGIC = b"\xd0\xcf\x11\xe0"  # OLE2 container = legacy .xls
 
 
 @dataclass
@@ -43,13 +42,20 @@ def _safe_float(val) -> Optional[float]:
         return None
 
 
-def _parse_excel(content: bytes) -> list[GprPoint]:
-    """Parse GPR Excel file. Returns list sorted ascending by period."""
+def _read_rows(content: bytes) -> list[tuple]:
+    """Return the first sheet as a list of row tuples (.xls via xlrd, .xlsx via openpyxl)."""
+    if content[:4] == _XLS_MAGIC:
+        import xlrd
+        sheet = xlrd.open_workbook(file_contents=content).sheet_by_index(0)
+        return [tuple(sheet.row_values(i)) for i in range(sheet.nrows)]
     import openpyxl
     wb = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
-    ws = wb.active
+    return list(wb.active.iter_rows(values_only=True))
 
-    rows = list(ws.iter_rows(values_only=True))
+
+def _parse_excel(content: bytes) -> list[GprPoint]:
+    """Parse GPR Excel file. Returns list sorted ascending by period."""
+    rows = _read_rows(content)
     if not rows:
         return []
 
@@ -108,10 +114,13 @@ def _parse_excel(content: bytes) -> list[GprPoint]:
         if period is None:
             continue
 
+        gpr_val = _safe_float(row[gpr_col]) if gpr_col is not None else None
+        if gpr_val is None:
+            continue
         points.append(
             GprPoint(
                 period=period.replace(day=1),
-                gpr_value=_safe_float(row[gpr_col]) if gpr_col is not None else None,
+                gpr_value=gpr_val,
                 gpr_threat=_safe_float(row[gprt_col]) if gprt_col is not None else None,
                 gpr_act=_safe_float(row[gpra_col]) if gpra_col is not None else None,
             )
@@ -125,7 +134,7 @@ async def fetch_gpr_index(last_n_months: int = 48) -> GprResult:
     """Download GPR Excel and return last N months of data."""
     retrieved_at = datetime.now(timezone.utc)
 
-    for url in (_GPR_CSV_URL, _GPR_URL):
+    for url in (_GPR_URL,):
         try:
             async with httpx.AsyncClient(timeout=30, follow_redirects=True) as client:
                 resp = await client.get(url)

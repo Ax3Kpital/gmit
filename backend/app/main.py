@@ -9,6 +9,9 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)-8s %(name)s %(message)s",
 )
+# httpx logs full request URLs at INFO, which include provider API keys (e.g. FRED api_key=...).
+for _noisy in ("httpx", "httpcore"):
+    logging.getLogger(_noisy).setLevel(logging.WARNING)
 logger = logging.getLogger("gmit")
 
 app = FastAPI(

@@ -1,6 +1,6 @@
 # GMIT — Implementation Plan
 **Last updated:** 2026-10-13  
-**Status:** Phase 0 in progress
+**Status:** Phases 0–8 complete (verified 2026-11-21); Phase 9 optional
 
 ---
 
@@ -27,7 +27,7 @@ Tasks:
 
 ---
 
-## Phase 1 — Local application foundation 🔲
+## Phase 1 — Local application foundation ✅
 
 **Goal:** A runnable skeleton. No real data yet.
 
@@ -60,7 +60,7 @@ Tasks:
 
 ---
 
-## Phase 2 — First real-data vertical slice 🔲
+## Phase 2 — First real-data vertical slice ✅
 
 **Goal:** One macro series, end-to-end, with real data.
 
@@ -83,7 +83,7 @@ Tasks:
 
 ---
 
-## Phase 3 — Market watchlist and data-quality layer 🔲
+## Phase 3 — Market watchlist and data-quality layer ✅
 
 **Goal:** Initial market data (EOD/delayed, clearly labeled).
 
@@ -107,7 +107,7 @@ Tasks:
 
 ---
 
-## Phase 4 — Theses, scenarios and AI research 🔲
+## Phase 4 — Theses, scenarios and AI research ✅
 
 **Goal:** Persistent research objects + first AI workflow.
 
@@ -129,7 +129,7 @@ Tasks:
 
 ---
 
-## Phase 5 — Smart-money v1 and alerts 🔲
+## Phase 5 — Smart-money v1 and alerts ✅
 
 **Goal:** CFTC COT + SEC 13F + configurable alerts.
 
@@ -152,7 +152,7 @@ Tasks:
 
 ---
 
-## Phase 6 — Agent observability and daily briefing 🔲
+## Phase 6 — Agent observability and daily briefing ✅
 
 **Goal:** Real agent execution events in UI + daily AI briefing.
 
@@ -171,7 +171,7 @@ Tasks:
 
 ---
 
-## Phase 7 — Notification channels and cloud hardening 🔲
+## Phase 7 — Notification channels and cloud hardening ✅
 
 **Goal:** Email + WhatsApp alerts; cloud deployment path.
 
@@ -185,6 +185,12 @@ Tasks:
 - Load test results and security review sign-off
 
 **Not in scope until validated:** Kubernetes, multi-region DR, broker integration.
+
+---
+
+## Phase 8 — Geopolitics data feeds ✅
+
+GDELT 2.0 (tone, volume and top articles per region, throttled to about one request every 5 seconds) and the Caldara–Iacoviello GPR index; region risk scoring; `/geopolitics` page. Providers that are down degrade to an explicit `UNAVAILABLE` state.
 
 ---
 

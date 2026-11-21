@@ -189,13 +189,13 @@
 |---|---|
 | **Status** | VERIFIED — Phase 8 LIVE |
 | **Datasets** | Monthly Geopolitical Risk Index 1985–present: GPR overall, GPRT (threat), GPRA (acts), country-level |
-| **Access** | Excel download: matteoiacoviello.com/gpr_files/data_gpr_export_with_groups.xls (no API key) |
+| **Access** | Excel download: matteoiacoviello.com/gpr_files/data_gpr_export.xls (legacy .xls, no API key; the `_with_groups` variant returns 503/404) |
 | **Cost** | Free |
 | **Terms** | Free for research/personal use. Citation: Caldara, D. and M. Iacoviello (2022), "Measuring Geopolitical Risk," American Economic Review. |
 | **Freshness** | Monthly (updated ~first week of following month) |
 | **Use case** | Historical GPR trend chart, benchmarking current risk level against 1985–2019 average (=100) |
 | **Rate limits** | File download — no key, no rate limit; refresh weekly |
-| **Implementation** | `backend/app/providers/gpr.py` — async Excel download + openpyxl parse; APScheduler weekly |
+| **Implementation** | `backend/app/providers/gpr.py` — async Excel download + xlrd parse (.xls) with openpyxl fallback (.xlsx); APScheduler |
 | **Last verified** | 2026-10-15 |
 
 ---

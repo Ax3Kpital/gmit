@@ -3,11 +3,15 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Optional
+import asyncio
+import time
+
 import httpx
 
 logger = logging.getLogger("gmit.gdelt")
 
-_TIMELINE_BASE = "https://api.gdeltproject.org/api/v2/timeline/timeline"
+# Timeline modes (timelinetone, timelinevolraw) are served by the DOC endpoint too.
+_TIMELINE_BASE = "https://api.gdeltproject.org/api/v2/doc/doc"
 _DOC_BASE = "https://api.gdeltproject.org/api/v2/doc/doc"
 
 # Region keys → human label + GDELT query string
@@ -68,6 +72,31 @@ class RegionToneResult:
     data_status: str
 
 
+# GDELT asks clients to stay at roughly one request per 5 seconds; faster calls get 429 or
+# dropped connections. All requests go through one throttle, with a single retry on 429.
+_MIN_INTERVAL_S = 5.5
+_RETRY_AFTER_429_S = 15.0
+_throttle_lock = asyncio.Lock()
+_last_request_at = 0.0
+
+
+async def _get(client: httpx.AsyncClient, url: str, params: dict) -> httpx.Response:
+    global _last_request_at
+    for attempt in (1, 2):
+        async with _throttle_lock:
+            wait = _MIN_INTERVAL_S - (time.monotonic() - _last_request_at)
+            if wait > 0:
+                await asyncio.sleep(wait)
+            resp = await client.get(url, params=params)
+            _last_request_at = time.monotonic()
+        if resp.status_code == 429 and attempt == 1:
+            logger.warning("GDELT rate limit (429); retrying once in %.0fs", _RETRY_AFTER_429_S)
+            await asyncio.sleep(_RETRY_AFTER_429_S)
+            continue
+        return resp
+    return resp
+
+
 async def fetch_region_tone(region_key: str, timespan: str = "2weeks") -> RegionToneResult:
     """Fetch GDELT tone timeline + top articles for a region."""
     region = REGIONS[region_key]
@@ -83,9 +112,10 @@ async def fetch_region_tone(region_key: str, timespan: str = "2weeks") -> Region
     async with httpx.AsyncClient(timeout=20) as client:
         # 1. Tone timeline
         try:
-            resp = await client.get(
+            resp = await _get(
+                client,
                 _TIMELINE_BASE,
-                params={
+                {
                     "query": query,
                     "mode": "timelinetone",
                     "timespan": timespan,
@@ -107,9 +137,10 @@ async def fetch_region_tone(region_key: str, timespan: str = "2weeks") -> Region
 
         # 2. Volume timeline (article count)
         try:
-            resp = await client.get(
+            resp = await _get(
+                client,
                 _TIMELINE_BASE,
-                params={
+                {
                     "query": query,
                     "mode": "timelinevolraw",
                     "timespan": "1week",
@@ -130,9 +161,10 @@ async def fetch_region_tone(region_key: str, timespan: str = "2weeks") -> Region
 
         # 3. Top articles
         try:
-            resp = await client.get(
+            resp = await _get(
+                client,
                 _DOC_BASE,
-                params={
+                {
                     "query": query,
                     "mode": "artlist",
                     "maxrecords": "5",
@@ -180,7 +212,5 @@ async def fetch_region_tone(region_key: str, timespan: str = "2weeks") -> Region
 
 
 async def fetch_all_regions(timespan: str = "2weeks") -> list[RegionToneResult]:
-    """Fetch tone data for all 6 regions concurrently."""
-    import asyncio
-    tasks = [fetch_region_tone(key, timespan) for key in REGIONS]
-    return list(await asyncio.gather(*tasks))
+    """Fetch tone data for all regions, one at a time (GDELT rate limit)."""
+    return [await fetch_region_tone(key, timespan) for key in REGIONS]
